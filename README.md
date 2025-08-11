@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TModWorks
 
-## Getting Started
+A powerful desktop application for modifying game statistics and parameters in real-time. TModWorks provides an intuitive user interface for adjusting health, stamina, ammo, and other game stats through a modern, cross-platform desktop application.
 
-First, run the development server:
+## 🎮 Features
+
+- **Real-time Game Modification**: Modify game statistics while playing
+- **Intuitive UI**: Clean, modern interface for easy stat adjustment
+- **Cross-platform**: Works on Windows, macOS, and Linux
+- **Database Integration**: Persistent storage for game profiles and settings
+- **Desktop App**: Native desktop experience with Tauri framework
+
+### Supported Game Modifications
+
+- Health points
+- Stamina/Energy
+- Ammunition
+- Experience points
+- Currency/Money
+- Skill points
+- And more...
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- Rust (for Tauri development)
+- Git
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/yourusername/tmodworks-app.git
+   cd tmodworks-app
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Set up the database**
+
+   ```bash
+   npm run db:generate
+   npm run db:push
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run tauri:dev
+   ```
+
+### Building for Production
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run tauri:build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` - Start Next.js development server
+- `npm run tauri:dev` - Start Tauri development mode
+- `npm run tauri:build` - Build production desktop app
+- `npm run db:generate` - Generate Prisma client
+- `npm run db:push` - Push database schema changes
+- `npm run db:studio` - Open Prisma Studio for database management
 
-## Learn More
+### Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Desktop**: Tauri 2.0
+- **Database**: Prisma ORM
+- **Styling**: Tailwind CSS
+- **Language**: Rust (backend), TypeScript (frontend)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📋 Version History
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### [0.1.0] - 2025-08-11
 
-## Deploy on Vercel
+- **Initial Release**
+- Basic project structure with Next.js and Tauri
+- Database integration with Prisma
+- Development environment setup
+- Basic UI framework with Tailwind CSS
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Planned Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [ ] Game detection and process monitoring
+- [ ] Memory reading and writing capabilities
+- [ ] Game profile management
+- [ ] Hotkey support for quick modifications
+- [ ] Game compatibility database
+- [ ] User authentication and cloud sync
+- [ ] Plugin system for custom modifications
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## ⚠️ Disclaimer
+
+This application is intended for educational purposes and single-player games only. Users are responsible for ensuring compliance with game terms of service and applicable laws. The developers are not responsible for any consequences resulting from the use of this software.
+
+## 🔗 Links
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Tauri Documentation](https://tauri.app/docs)
+- [Prisma Documentation](https://www.prisma.io/docs)
+
+---
+
+**Note**: This project is currently in early development. Features and APIs may change significantly between versions.
