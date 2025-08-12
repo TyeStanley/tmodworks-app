@@ -1,59 +1,52 @@
 # TModWorks
 
-A powerful desktop application for modifying game statistics and parameters in real-time. TModWorks provides an intuitive user interface for adjusting health, stamina, ammo, and other game stats through a modern, cross-platform desktop application.
+A desktop application for modifying game stats and parameters, built with Tauri, Next.js, and DaisyUI.
 
-## 🎮 Features
+## Features
 
-- **Real-time Game Modification**: Modify game statistics while playing
-- **Intuitive UI**: Clean, modern interface for easy stat adjustment
-- **Cross-platform**: Works on Windows, macOS, and Linux
-- **Database Integration**: Persistent storage for game profiles and settings
-- **Desktop App**: Native desktop experience with Tauri framework
+- **Custom Title Bar**: Like Discord and WeMod, the app uses a custom title bar with window controls
+- **Game Library**: Browse and manage your game collection
+- **Favorites System**: Mark your favorite games for quick access
+- **Modern UI**: Built with DaisyUI components for a clean, modern interface
+- **Desktop Native**: Built with Tauri for native performance
 
-### Supported Game Modifications
+## Tech Stack
 
-- Health points
-- Stamina/Energy
-- Ammunition
-- Experience points
-- Currency/Money
-- Skill points
-- And more...
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **UI Framework**: DaisyUI + Tailwind CSS
+- **Desktop**: Tauri 2.0
+- **Database**: Prisma (configured but not used yet)
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- Rust (for Tauri development)
+- Rust (for Tauri)
 - Git
 
 ### Installation
 
-1. **Clone the repository**
+1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/yourusername/tmodworks-app.git
-   cd tmodworks-app
-   ```
+```bash
+git clone <repository-url>
+cd tmodworks-app
+```
 
-2. **Install dependencies**
+2. Install dependencies:
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-3. **Set up the database**
+3. Run the development server:
 
-   ```bash
-   npm run db:generate
-   npm run db:push
-   ```
+```bash
+npm run tauri:dev
+```
 
-4. **Start development server**
-   ```bash
-   npm run tauri:dev
-   ```
+This will start both the Next.js development server and the Tauri app.
 
 ### Building for Production
 
@@ -61,67 +54,56 @@ A powerful desktop application for modifying game statistics and parameters in r
 npm run tauri:build
 ```
 
-## 🛠️ Development
+## Project Structure
 
-### Available Scripts
+```
+src/
+├── app/                 # Next.js app directory
+│   ├── page.tsx        # Main page
+│   ├── layout.tsx      # Root layout
+│   └── globals.css     # Global styles
+├── components/         # React components
+│   ├── ui/            # UI components (Button, etc.)
+│   ├── Navbar.tsx     # Custom title bar with window controls
+│   ├── Sidebar.tsx    # Game library sidebar
+│   └── MainContent.tsx # Main content area
+└── lib/               # Utilities and data
+    └── mockData.ts    # Mock game data
+```
 
-- `npm run dev` - Start Next.js development server
-- `npm run tauri:dev` - Start Tauri development mode
-- `npm run tauri:build` - Build production desktop app
-- `npm run db:generate` - Generate Prisma client
-- `npm run db:push` - Push database schema changes
-- `npm run db:studio` - Open Prisma Studio for database management
+## Custom Title Bar & System Tray
 
-### Tech Stack
+The app features a custom title bar similar to Discord and WeMod:
 
-- **Frontend**: Next.js 15, React 19, TypeScript
-- **Desktop**: Tauri 2.0
-- **Database**: Prisma ORM
-- **Styling**: Tailwind CSS
-- **Language**: Rust (backend), TypeScript (frontend)
+- **Draggable Area**: The navbar can be used to drag the window
+- **Window Controls**: Minimize, maximize/restore, and hide buttons
+- **Integrated Design**: Seamlessly integrated with the app's design
+- **System Tray**: App minimizes to system tray instead of closing
+- **Tray Menu**: Right-click tray icon for "Show TModWorks" and "Quit" options
+- **Background Running**: App continues running in background when hidden
 
-## 📋 Version History
+## Mock Data
 
-### [0.1.0] - 2025-08-11
+Currently using mock data for games. The structure includes:
 
-- **Initial Release**
-- Basic project structure with Next.js and Tauri
-- Database integration with Prisma
-- Development environment setup
-- Basic UI framework with Tailwind CSS
+- Game name, category, play time
+- Favorite status
+- Installation status
+- Last played information
 
-### Planned Features
+## Next Steps
 
-- [ ] Game detection and process monitoring
-- [ ] Memory reading and writing capabilities
-- [ ] Game profile management
-- [ ] Hotkey support for quick modifications
-- [ ] Game compatibility database
-- [ ] User authentication and cloud sync
-- [ ] Plugin system for custom modifications
+- Implement actual Tauri window control commands
+- Add game detection and scanning
+- Create game modification interface
+- Add user preferences and settings
+- Implement database for game data persistence
 
-## 🤝 Contributing
+## Development
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+The app is set up with:
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## ⚠️ Disclaimer
-
-This application is intended for educational purposes and single-player games only. Users are responsible for ensuring compliance with game terms of service and applicable laws. The developers are not responsible for any consequences resulting from the use of this software.
-
-## 🔗 Links
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Tauri Documentation](https://tauri.app/docs)
-- [Prisma Documentation](https://www.prisma.io/docs)
-
----
-
-**Note**: This project is currently in early development. Features and APIs may change significantly between versions.
+- TypeScript for type safety
+- ESLint for code quality
+- Prettier for code formatting
+- DaisyUI for consistent UI components

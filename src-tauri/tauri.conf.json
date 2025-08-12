@@ -12,6 +12,7 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "TModWorks",
         "width": 1400,
         "height": 800,
@@ -20,13 +21,16 @@
         "transparent": false,
         "center": true,
         "minWidth": 1400,
-        "minHeight": 800
+        "minHeight": 800,
+        "decorations": false,
+        "titleBarStyle": "Overlay"
       }
     ],
     "security": {
       "csp": null
     }
   },
+
   "bundle": {
     "active": true,
     "targets": "all",
