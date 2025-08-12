@@ -8,9 +8,82 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Games table - stores supported games
 model Game {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  steamAppId  Int      @unique
+  name        String
+  processName String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  gameCheats GameCheat[]
+
+  @@map("games")
+}
+
+// Cheat categories (Player, Combat, Resources, etc.)
+model CheatCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  icon        String? // Icon name or emoji
+  description String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  cheats Cheat[]
+
+  @@map("cheat_categories")
+}
+
+// Generic cheat definitions
+model Cheat {
+  id          String    @id @default(cuid())
+  name        String // Default display name
+  type        CheatType
+  categoryId  String
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  category   CheatCategory @relation(fields: [categoryId], references: [id])
+  gameCheats GameCheat[]
+
+  @@map("cheats")
+}
+
+// Game-specific cheat configurations
+model GameCheat {
+  id          String   @id @default(cuid())
+  gameId      String
+  cheatId     String
+  displayName String? // Override default name for this game
+  offsets     Json // Memory offsets and configuration
+  parameters  Json? // Additional parameters (min, max, options, etc.)
+  isEnabled   Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  game  Game  @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  cheat Cheat @relation(fields: [cheatId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, cheatId])
+  @@map("game_cheats")
+}
+
+// Enums
+enum CheatType {
+  TOGGLE
+  NUMBER
+  SELECT
+  BOOLEAN
 }
