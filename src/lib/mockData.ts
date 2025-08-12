@@ -1,147 +1,88 @@
 export interface Game {
-  id: number;
+  id: string;
+  steamAppId: number;
   name: string;
-  isFavorite: boolean;
-  isInstalled: boolean;
-  category?: string;
-  lastPlayed?: string;
-  playTime?: number; // in hours
+  processName: string;
 }
 
-export const mockGames: Game[] = [
+export type GameQueryResult = Game | null;
+
+export const MOCK_GAMES: Game[] = [
   {
-    id: 1,
-    name: 'Valheim',
-    isFavorite: true,
-    isInstalled: true,
-    category: 'Survival',
-    lastPlayed: '2 hours ago',
-    playTime: 156,
+    id: 'ghostrunner',
+    steamAppId: 1139900,
+    name: 'Ghostrunner',
+    processName: 'Ghostrunner.exe',
   },
   {
-    id: 2,
-    name: 'ELDEN RING',
-    isFavorite: true,
-    isInstalled: true,
-    category: 'RPG',
-    lastPlayed: '1 day ago',
-    playTime: 89,
+    id: 'dune-awakening',
+    steamAppId: 1172710,
+    name: 'Dune: Awakening',
+    processName: 'DuneAwakening.exe',
   },
   {
-    id: 3,
-    name: 'Like a Dragon: Ishin!',
-    isFavorite: true,
-    isInstalled: true,
-    category: 'Action RPG',
-    lastPlayed: '3 days ago',
-    playTime: 45,
+    id: 'naraka-bladepoint',
+    steamAppId: 1203220,
+    name: 'NARAKA: BLADEPOINT',
+    processName: 'NARAKA BLADEPOINT.exe',
   },
   {
-    id: 4,
-    name: 'R.E.P.O.',
-    isFavorite: false,
-    isInstalled: true,
-    category: 'Action',
-    lastPlayed: '1 week ago',
-    playTime: 12,
+    id: 'remnant-2',
+    steamAppId: 1282100,
+    name: 'Remnant II',
+    processName: 'Remnant2.exe',
   },
   {
-    id: 5,
-    name: 'Black Myth: Wukong',
-    isFavorite: false,
-    isInstalled: true,
-    category: 'Action RPG',
-    lastPlayed: '2 weeks ago',
-    playTime: 23,
+    id: 'lost-ark',
+    steamAppId: 1599340,
+    name: 'Lost Ark',
+    processName: 'LostArk.exe',
   },
   {
-    id: 6,
-    name: 'Lost Castle 2',
-    isFavorite: false,
-    isInstalled: true,
-    category: 'Roguelike',
-    lastPlayed: '3 weeks ago',
-    playTime: 8,
-  },
-  {
-    id: 7,
-    name: 'PEAK',
-    isFavorite: false,
-    isInstalled: true,
-    category: 'Adventure',
-    lastPlayed: '1 month ago',
-    playTime: 5,
-  },
-  {
-    id: 8,
-    name: 'Mount & Blade II: Bannerlord',
-    isFavorite: false,
-    isInstalled: true,
-    category: 'Strategy',
-    lastPlayed: '1 month ago',
-    playTime: 67,
-  },
-  {
-    id: 9,
-    name: '7 Days to Die',
-    isFavorite: false,
-    isInstalled: true,
-    category: 'Survival Horror',
-    lastPlayed: '2 months ago',
-    playTime: 34,
-  },
-  {
-    id: 10,
-    name: 'Kingdom Come: Deliverance',
-    isFavorite: false,
-    isInstalled: true,
-    category: 'RPG',
-    lastPlayed: '2 months ago',
-    playTime: 78,
-  },
-  {
-    id: 11,
-    name: 'Age of Empires II: Definitive Edition',
-    isFavorite: false,
-    isInstalled: true,
-    category: 'Strategy',
-    lastPlayed: '3 months ago',
-    playTime: 123,
-  },
-  {
-    id: 12,
-    name: 'Borderlands 2',
-    isFavorite: false,
-    isInstalled: true,
-    category: 'FPS',
-    lastPlayed: '3 months ago',
-    playTime: 56,
-  },
-  {
-    id: 13,
-    name: 'Lethal Company',
-    isFavorite: false,
-    isInstalled: true,
-    category: 'Horror',
-    lastPlayed: '4 months ago',
-    playTime: 15,
-  },
-  {
-    id: 14,
+    id: 'star-wars-jedi-survivor',
+    steamAppId: 1774580,
     name: 'STAR WARS Jedi: Survivor',
-    isFavorite: false,
-    isInstalled: true,
-    category: 'Action Adventure',
-    lastPlayed: '4 months ago',
-    playTime: 42,
+    processName: 'Jedi Survivor.exe',
+  },
+  {
+    id: 'like-a-dragon-ishin',
+    steamAppId: 1805480,
+    name: 'Like a Dragon: Ishin!',
+    processName: 'Like a Dragon Ishin!.exe',
+  },
+  {
+    id: 'lethal-company',
+    steamAppId: 1966720,
+    name: 'Lethal Company',
+    processName: 'Lethal Company.exe',
+  },
+  {
+    id: 'warframe',
+    steamAppId: 230410,
+    name: 'Warframe',
+    processName: 'Warframe.x64.exe',
+  },
+  {
+    id: 'black-myth-wukong',
+    steamAppId: 2358720,
+    name: 'Black Myth: Wukong',
+    processName: 'Black Myth Wukong.exe',
   },
 ];
 
-export const navigationItems = [
-  { id: 'maps', name: 'Maps', icon: '🗺️' },
-  { id: 'videos', name: 'Videos', icon: '🎥' },
-  { id: 'upcoming', name: 'Upcoming', icon: '📅' },
-  { id: 'pro', name: 'TModWorks Pro', icon: '⭐' },
-  { id: 'inside', name: 'Inside TModWorks', icon: '🏠' },
-  { id: 'library', name: 'Library', icon: '📚' },
-];
+// Single function to query game by Steam App ID
+export const getGameBySteamAppId = (steamAppId: number, gameName?: string): GameQueryResult => {
+  const game = MOCK_GAMES.find((game) => game.steamAppId === steamAppId);
+
+  if (game) {
+    return game;
+  }
+
+  // Return unsupported game object with real game name
+  return {
+    id: 'unsupported',
+    steamAppId: steamAppId,
+    name: gameName || 'Unknown Game',
+    processName: 'unknown.exe',
+  };
+};

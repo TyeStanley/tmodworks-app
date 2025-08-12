@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { invoke } from '@tauri-apps/api/core';
+import { useSetCurrentGame } from '@/lib/store';
+import { getGameBySteamAppId } from '@/lib/mockData';
 
 interface SteamGame {
   app_id: string;
@@ -19,6 +21,8 @@ export default function Sidebar() {
   const [steamGames, setSteamGames] = useState<GameWithImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const setCurrentGame = useSetCurrentGame();
 
   useEffect(() => {
     loadSteamGames();
@@ -45,6 +49,26 @@ export default function Sidebar() {
       setSteamGames([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGameClick = (appId: string) => {
+    setSelectedGame(appId);
+
+    // Query the mock database using the Steam App ID
+    const steamAppId = parseInt(appId, 10);
+    if (!isNaN(steamAppId)) {
+      const gameName = steamGames.find((g) => g.app_id === appId)?.name || 'Unknown Game';
+      const gameFromDb = getGameBySteamAppId(steamAppId, gameName);
+
+      // Set the current game in the store (can be supported or unsupported)
+      setCurrentGame(gameFromDb);
+
+      if (gameFromDb && gameFromDb.id !== 'unsupported') {
+        console.log(`Selected game from database: ${gameFromDb.name}`);
+      } else {
+        console.log(`Game with Steam App ID ${steamAppId} not found in database`);
+      }
     }
   };
 
@@ -75,7 +99,7 @@ export default function Sidebar() {
           {steamGames.map((game) => (
             <button
               key={game.app_id}
-              onClick={() => setSelectedGame(game.app_id)}
+              onClick={() => handleGameClick(game.app_id)}
               className={`relative w-full cursor-pointer overflow-hidden rounded-lg transition-all duration-200 ${
                 selectedGame === game.app_id
                   ? 'ring-primary ring-opacity-50 ring-2'
