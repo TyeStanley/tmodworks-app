@@ -5,10 +5,24 @@ use std::path::Path;
 use std::collections::HashSet;
 use winreg::enums::*;
 use winreg::RegKey;
+use std::sync::Mutex;
+
+mod cheat_core;
+use cheat_core::{MemoryManager, CheatConfig};
+
+// Global state for memory management
+struct AppState {
+    memory_manager: Mutex<MemoryManager>,
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+  let app_state = AppState {
+    memory_manager: Mutex::new(MemoryManager::new()),
+  };
+
   tauri::Builder::default()
+    .manage(app_state)
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(
@@ -87,7 +101,13 @@ pub fn run() {
       maximize_window,
       hide_window,
       quit_app,
-      scan_steam_games
+      scan_steam_games,
+      attach_to_game,
+      apply_cheat,
+      start_cheat_loop,
+      stop_cheat_loop,
+      add_cheat,
+      remove_cheat
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
@@ -333,4 +353,58 @@ fn is_system_component(name: &str) -> bool {
         name.to_lowercase().contains(&component.to_lowercase())
     })
 }
+
+// Memory manipulation commands
+#[tauri::command]
+async fn attach_to_game(
+    state: tauri::State<'_, AppState>,
+    process_name: String,
+) -> Result<(), String> {
+    let mut memory_manager = state.memory_manager.lock().unwrap();
+    memory_manager.attach_to_process(&process_name)
+}
+
+#[tauri::command]
+async fn apply_cheat(
+    state: tauri::State<'_, AppState>,
+    cheat_config: CheatConfig,
+) -> Result<(), String> {
+    let memory_manager = state.memory_manager.lock().unwrap();
+    memory_manager.apply_cheat(&cheat_config)
+}
+
+#[tauri::command]
+async fn start_cheat_loop(
+    state: tauri::State<'_, AppState>,
+) -> Result<(), String> {
+    let mut memory_manager = state.memory_manager.lock().unwrap();
+    memory_manager.start_cheat_loop()
+}
+
+#[tauri::command]
+async fn stop_cheat_loop(
+    state: tauri::State<'_, AppState>,
+) -> Result<(), String> {
+    let mut memory_manager = state.memory_manager.lock().unwrap();
+    memory_manager.stop_cheat_loop()
+}
+
+#[tauri::command]
+async fn add_cheat(
+    state: tauri::State<'_, AppState>,
+    cheat_config: CheatConfig,
+) -> Result<(), String> {
+    let memory_manager = state.memory_manager.lock().unwrap();
+    memory_manager.add_cheat(cheat_config)
+}
+
+#[tauri::command]
+async fn remove_cheat(
+    state: tauri::State<'_, AppState>,
+    cheat_id: String,
+) -> Result<(), String> {
+    let memory_manager = state.memory_manager.lock().unwrap();
+    memory_manager.remove_cheat(&cheat_id)
+}
+
 // End of finding installed games logic

@@ -1,9 +1,21 @@
 // Enums matching Prisma schema
-export enum CheatType {
+export enum CheatControl {
   TOGGLE = 'TOGGLE',
-  NUMBER = 'NUMBER',
-  SELECT = 'SELECT',
-  BOOLEAN = 'BOOLEAN',
+  STEPPER = 'STEPPER',
+  SLIDER = 'SLIDER',
+}
+
+// Categories for each type of cheat
+export enum Category {
+  PLAYER = 'PLAYER',
+  INVENTORY = 'INVENTORY',
+  STATS = 'STATS',
+  ENEMIES = 'ENEMIES',
+  WEAPONS = 'WEAPONS',
+  GAME = 'GAME',
+  PHYSICS = 'PHYSICS',
+  TELEPORT = 'TELEPORT',
+  OTHER = 'OTHER',
 }
 
 // Interfaces matching Prisma schema
@@ -40,7 +52,7 @@ export interface CheatCategory {
 export interface Cheat {
   id: string;
   name: string;
-  type: CheatType;
+  type: CheatControl;
   categoryId: string;
   description?: string;
   isActive: boolean;
@@ -130,7 +142,7 @@ export const MOCK_CHEATS: Cheat[] = [
   {
     id: 'unlimited_health',
     name: 'Unlimited Health',
-    type: CheatType.TOGGLE,
+    type: CheatControl.TOGGLE,
     categoryId: 'player',
     description: 'Enable unlimited health',
     isActive: true,
@@ -140,7 +152,7 @@ export const MOCK_CHEATS: Cheat[] = [
   {
     id: 'god_mode',
     name: 'God Mode',
-    type: CheatType.TOGGLE,
+    type: CheatControl.TOGGLE,
     categoryId: 'player',
     description: 'Become invincible to all damage',
     isActive: true,
@@ -150,7 +162,7 @@ export const MOCK_CHEATS: Cheat[] = [
   {
     id: 'unlimited_ammo',
     name: 'Unlimited Ammo',
-    type: CheatType.TOGGLE,
+    type: CheatControl.TOGGLE,
     categoryId: 'combat',
     description: 'Never run out of ammunition',
     isActive: true,
@@ -160,7 +172,7 @@ export const MOCK_CHEATS: Cheat[] = [
   {
     id: 'one_hit_kill',
     name: 'One Hit Kill',
-    type: CheatType.TOGGLE,
+    type: CheatControl.TOGGLE,
     categoryId: 'combat',
     description: 'Kill enemies with a single hit',
     isActive: true,
@@ -170,7 +182,7 @@ export const MOCK_CHEATS: Cheat[] = [
   {
     id: 'unlimited_money',
     name: 'Unlimited Money',
-    type: CheatType.NUMBER,
+    type: CheatControl.STEPPER,
     categoryId: 'resources',
     description: 'Set your money to unlimited or a specific amount',
     isActive: true,
@@ -180,7 +192,7 @@ export const MOCK_CHEATS: Cheat[] = [
   {
     id: 'unlimited_items',
     name: 'Unlimited Items',
-    type: CheatType.TOGGLE,
+    type: CheatControl.TOGGLE,
     categoryId: 'resources',
     description: 'Never run out of items',
     isActive: true,
@@ -190,7 +202,7 @@ export const MOCK_CHEATS: Cheat[] = [
   {
     id: 'super_speed',
     name: 'Super Speed',
-    type: CheatType.NUMBER,
+    type: CheatControl.STEPPER,
     categoryId: 'movement',
     description: 'Increase your movement speed',
     isActive: true,
@@ -200,7 +212,7 @@ export const MOCK_CHEATS: Cheat[] = [
   {
     id: 'teleport',
     name: 'Teleport',
-    type: CheatType.TOGGLE,
+    type: CheatControl.TOGGLE,
     categoryId: 'movement',
     description: 'Teleport to waypoints instantly',
     isActive: true,
@@ -210,7 +222,7 @@ export const MOCK_CHEATS: Cheat[] = [
   {
     id: 'no_clip',
     name: 'No Clip',
-    type: CheatType.TOGGLE,
+    type: CheatControl.TOGGLE,
     categoryId: 'movement',
     description: 'Walk through walls and objects',
     isActive: true,
@@ -220,7 +232,7 @@ export const MOCK_CHEATS: Cheat[] = [
   {
     id: 'instant_reload',
     name: 'Instant Reload',
-    type: CheatType.TOGGLE,
+    type: CheatControl.TOGGLE,
     categoryId: 'combat',
     description: 'Reload weapons instantly',
     isActive: true,
