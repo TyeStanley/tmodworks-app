@@ -1,8 +1,11 @@
 import Image from 'next/image';
-import { useCurrentGame } from '@/lib/store';
 
 export default function GameHeader() {
-  const currentGame = useCurrentGame();
+  // ! Temporary: hardcode game info for testing
+  const currentGame = {
+    name: 'STAR WARS™: Battlefront Classic Collection',
+    steamAppId: 2446550,
+  };
 
   // If no game is selected, don't render anything
   if (!currentGame) return null;

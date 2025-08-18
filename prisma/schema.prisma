@@ -8,82 +8,71 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Games table - stores supported games
 model Game {
-  id          String   @id @default(cuid())
-  steamAppId  Int      @unique
-  name        String
-  processName String
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  gameCheats GameCheat[]
-
-  @@map("games")
+  id          String      @id @default(uuid())
+  steamAppId  Int         @unique // Steam app id
+  name        String // Name of the game
+  processName String // To be used to identify the game process
+  isActive    Boolean     @default(true) // Controls visibility to users
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  GameCheat   GameCheat[]
 }
 
-// Cheat categories (Player, Combat, Resources, etc.)
-model CheatCategory {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  icon        String? // Icon name or emoji
-  description String?
-  order       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  cheats Cheat[]
-
-  @@map("cheat_categories")
-}
-
-// Generic cheat definitions
 model Cheat {
-  id          String    @id @default(cuid())
-  name        String // Default display name
-  type        CheatType
-  categoryId  String
-  description String?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  // Relations
+  id         String        @id @default(uuid())
+  name       String        @unique // Enforces "health", "godmode", "speed", etc.
+  categoryId String // Category of the cheat
   category   CheatCategory @relation(fields: [categoryId], references: [id])
-  gameCheats GameCheat[]
-
-  @@map("cheats")
+  isActive   Boolean       @default(true) // Controls visibility to users
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  GameCheat  GameCheat[]
 }
 
-// Game-specific cheat configurations
 model GameCheat {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
+  game        Game     @relation(fields: [gameId], references: [id])
   gameId      String
+  cheat       Cheat    @relation(fields: [cheatId], references: [id])
   cheatId     String
-  displayName String? // Override default name for this game
-  offsets     Json // Memory offsets and configuration
-  parameters  Json? // Additional parameters (min, max, options, etc.)
-  isEnabled   Boolean  @default(true)
-  order       Int      @default(0)
+  displayName String? // Custom name override (optional)
+  offsets     Json
+  // {
+  //   "moduleName": "Battlefront2.dll",
+  //   "baseAddress": "023DF1B0",
+  //   "offsets": [38],
+  //   "valueType": "int32",
+  // }
+  parameters  Json
+  // {
+  //   "min": 0,
+  //   "max": 1,
+  //   "step": 1
+  // }
+  isActive    Boolean  @default(true) // Controls visibility to users
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
-  game  Game  @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  cheat Cheat @relation(fields: [cheatId], references: [id], onDelete: Cascade)
-
-  @@unique([gameId, cheatId])
-  @@map("game_cheats")
+  @@unique([gameId, cheatId]) // Prevent duplicate cheat assignments
 }
 
-// Enums
-enum CheatType {
-  TOGGLE
-  NUMBER
-  SELECT
-  BOOLEAN
+model CheatCategory {
+  id       String            @id @default(uuid())
+  name     CheatCategoryType @unique // name of the category
+  priority Int               @default(0) // show the category in the order of the priority (0 is the first)
+  Cheat    Cheat[]
+}
+
+// Enum for the category of the cheat
+enum CheatCategoryType {
+  PLAYER // 0
+  INVENTORY // 1
+  STATS // 2
+  ENEMIES // 3
+  WEAPONS // 4
+  GAME // 5
+  PHYSICS // 6
+  TELEPORT // 7
+  OTHER // 8
 }

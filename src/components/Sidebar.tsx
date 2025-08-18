@@ -3,8 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { invoke } from '@tauri-apps/api/core';
-import { useSetCurrentGame } from '@/lib/store';
-import { getGameBySteamAppId } from '@/lib/mockData';
 
 interface SteamGame {
   app_id: string;
@@ -17,17 +15,19 @@ interface GameWithImage extends SteamGame {
 }
 
 export default function Sidebar() {
+  // Local state to highlight the selected game
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
-  const [steamGames, setSteamGames] = useState<GameWithImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const setCurrentGame = useSetCurrentGame();
+  // Local state to store the list of Steam games from local machine
+  const [steamGames, setSteamGames] = useState<GameWithImage[]>([]);
 
   useEffect(() => {
     loadSteamGames();
   }, []);
 
+  // Function to load Steam games from the backend
   const loadSteamGames = async () => {
     try {
       setLoading(true);
@@ -55,21 +55,12 @@ export default function Sidebar() {
   const handleGameClick = (appId: string) => {
     setSelectedGame(appId);
 
-    // Query the mock database using the Steam App ID
-    const steamAppId = parseInt(appId, 10);
-    if (!isNaN(steamAppId)) {
-      const gameName = steamGames.find((g) => g.app_id === appId)?.name || 'Unknown Game';
-      const gameFromDb = getGameBySteamAppId(steamAppId, gameName);
+    // Temporary: just log the selection
+    const gameName = steamGames.find((g) => g.app_id === appId)?.name || 'Unknown Game';
+    console.log(`Selected game: ${gameName} (ID: ${appId})`);
 
-      // Set the current game in the store (can be supported or unsupported)
-      setCurrentGame(gameFromDb);
-
-      if (gameFromDb && gameFromDb.id !== 'unsupported') {
-        console.log(`Selected game from database: ${gameFromDb.name}`);
-      } else {
-        console.log(`Game with Steam App ID ${steamAppId} not found in database`);
-      }
-    }
+    // TODO: Replace with proper game selection logic
+    // For now, just update the selected state
   };
 
   return (
@@ -96,51 +87,53 @@ export default function Sidebar() {
         )}
 
         <div className="space-y-1">
-          {steamGames.map((game) => (
-            <button
-              key={game.app_id}
-              onClick={() => handleGameClick(game.app_id)}
-              className={`relative w-full cursor-pointer overflow-hidden rounded-lg transition-all duration-200 ${
-                selectedGame === game.app_id
-                  ? 'ring-primary ring-opacity-50 ring-2'
-                  : 'hover:scale-[1.02] hover:shadow-lg'
-              }`}
-            >
-              <div className="relative h-16 w-full">
-                {/* Background Image or Fallback */}
-                {!game.hasImageError ? (
-                  <Image
-                    src={game.imageUrl}
-                    alt={game.name}
-                    fill
-                    className="object-cover"
-                    onError={() => {
-                      // Mark this game as having an image error
-                      setSteamGames((prev) =>
-                        prev.map((g) =>
-                          g.app_id === game.app_id ? { ...g, hasImageError: true } : g,
-                        ),
-                      );
-                    }}
-                    unoptimized={true}
-                  />
-                ) : (
-                  /* Fallback Background */
-                  <div className="from-primary via-secondary to-primary/80 flex h-full w-full items-center justify-center bg-gradient-to-br" />
-                )}
+          {steamGames.map((game) => {
+            return (
+              <button
+                key={game.app_id}
+                onClick={() => handleGameClick(game.app_id)}
+                className={`relative w-full cursor-pointer overflow-hidden rounded-lg transition-all duration-200 ${
+                  selectedGame === game.app_id
+                    ? 'ring-primary ring-opacity-50 ring-2'
+                    : 'hover:scale-[1.02] hover:shadow-lg'
+                }`}
+              >
+                <div className="relative h-16 w-full">
+                  {/* Background Image or Fallback */}
+                  {!game.hasImageError ? (
+                    <Image
+                      src={game.imageUrl}
+                      alt={game.name}
+                      fill
+                      className="object-cover"
+                      onError={() => {
+                        // Mark this game as having an image error
+                        setSteamGames((prev) =>
+                          prev.map((g) =>
+                            g.app_id === game.app_id ? { ...g, hasImageError: true } : g,
+                          ),
+                        );
+                      }}
+                      unoptimized={true}
+                    />
+                  ) : (
+                    /* Fallback Background */
+                    <div className="from-primary via-secondary to-primary/80 flex h-full w-full items-center justify-center bg-gradient-to-br" />
+                  )}
 
-                {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-black/50" />
+                  {/* Dark Overlay */}
+                  <div className="absolute inset-0 bg-black/50" />
 
-                {/* Game Name */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="rounded-md bg-black/20 px-3 py-1 text-center text-xs leading-tight font-bold text-white shadow-lg drop-shadow-lg backdrop-blur-sm">
-                    {game.name}
-                  </span>
+                  {/* Game Name */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="rounded-md bg-black/20 px-3 py-1 text-center text-xs leading-tight font-bold text-white shadow-lg drop-shadow-lg backdrop-blur-sm">
+                      {game.name}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

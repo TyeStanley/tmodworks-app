@@ -1,4 +1,4 @@
-interface RangeControlProps {
+interface SliderControlProps {
   currentValue: number;
   min?: number;
   max?: number;
@@ -6,13 +6,13 @@ interface RangeControlProps {
   onValueChange: (value: number) => void;
 }
 
-export default function RangeControl({
+export default function SliderControl({
   currentValue,
   min = 0,
   max = 100,
   step = 1,
   onValueChange,
-}: RangeControlProps) {
+}: SliderControlProps) {
   return (
     <div className="flex items-center space-x-4">
       <div className="text-center font-mono text-xs">{currentValue}</div>

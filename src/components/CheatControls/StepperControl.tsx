@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-interface NumberStepperControlProps {
+interface StepperControlProps {
   currentValue: number;
   min?: number;
   max?: number;
@@ -8,13 +8,13 @@ interface NumberStepperControlProps {
   onValueChange: (value: number) => void;
 }
 
-export default function NumberStepperControl({
+export default function StepperControl({
   currentValue,
   min = 0,
   max = 999,
   step = 1,
   onValueChange,
-}: NumberStepperControlProps) {
+}: StepperControlProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(currentValue.toString());
 

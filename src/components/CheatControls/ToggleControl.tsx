@@ -1,5 +1,3 @@
-import { CheatType } from '@/lib/mockData';
-
 interface ToggleControlProps {
   currentValue: boolean;
   onValueChange: (value: boolean) => void;

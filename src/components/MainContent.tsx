@@ -1,18 +1,19 @@
 'use client';
 
-import { useCurrentGame } from '@/lib/store';
 import WelcomeMsg from '@/components/WelcomeMsg';
 import UnsupportedGame from '@/components/UnsupportedGame';
 import SupportedGame from '@/components/SupportedGame';
 import GameHeader from '@/components/GameHeader';
 
 export default function MainContent() {
-  const currentGame = useCurrentGame();
+  // ! Temporary: hardcode to test supported game
+  const isSupported = true; // Change to false to test unsupported game
 
   // If no game is selected, show the welcome screen
-  if (!currentGame) return <WelcomeMsg />;
-
-  const isUnsupported = currentGame?.id === 'unsupported';
+  if (!isSupported && false) {
+    // This will never be true, so always show game
+    return <WelcomeMsg />;
+  }
 
   return (
     <div className="custom-scrollbar flex-1 overflow-y-auto">
@@ -20,7 +21,7 @@ export default function MainContent() {
       <GameHeader />
 
       {/* Main Content Area */}
-      {isUnsupported ? <UnsupportedGame /> : <SupportedGame />}
+      {isSupported ? <SupportedGame /> : <UnsupportedGame />}
     </div>
   );
 }

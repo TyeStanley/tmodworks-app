@@ -1,22 +1,114 @@
+import { useState } from 'react';
 import { Zap } from 'lucide-react';
-import { getCheatsByCategory, CheatControl } from '@/lib/mockData';
-import { useCheatStates, useSetCheatState, useCurrentGame } from '@/lib/store';
 import {
   KeybindControl,
   ToggleControl,
-  NumberStepperControl,
-  RangeControl,
+  StepperControl,
+  SliderControl,
 } from '@/components/CheatControls';
 
+// Define cheat control types
+enum CheatControl {
+  TOGGLE = 'TOGGLE',
+  STEPPER = 'STEPPER',
+  SLIDER = 'SLIDER',
+}
+
+// Mock data structure for demonstration
+interface Cheat {
+  id: string;
+  name: string;
+  type: CheatControl;
+  category: {
+    name: string;
+    icon?: string;
+  };
+}
+
+interface GameCheat {
+  id: string;
+  cheat: Cheat;
+  displayName?: string;
+  parameters?: {
+    min?: number;
+    max?: number;
+    step?: number;
+    defaultValue?: number | boolean;
+  };
+  order?: number;
+}
+
+interface CheatsByCategory {
+  [categoryName: string]: GameCheat[];
+}
+
 export default function SupportedGame() {
-  const currentGame = useCurrentGame();
-  const cheatStates = useCheatStates();
-  const setCheatState = useSetCheatState();
+  // Local state to replace Zustand store
+  const [cheatStates, setCheatStates] = useState<Record<string, number | boolean | string>>({});
 
-  if (!currentGame) return null;
+  // Mock data - you'll replace this with your actual data
+  const cheatsByCategory: CheatsByCategory = {
+    PLAYER: [
+      {
+        id: 'health-1',
+        cheat: {
+          id: 'health',
+          name: 'health',
+          type: CheatControl.TOGGLE,
+          category: { name: 'PLAYER' },
+        },
+        displayName: 'Unlimited Health',
+        parameters: { min: 0, max: 1, step: 1, defaultValue: false },
+      },
+      {
+        id: 'stamina-1',
+        cheat: {
+          id: 'stamina',
+          name: 'stamina',
+          type: CheatControl.TOGGLE,
+          category: { name: 'PLAYER' },
+        },
+        displayName: 'Unlimited Stamina',
+        parameters: { min: 0, max: 1, step: 1, defaultValue: false },
+      },
+    ],
+    WEAPONS: [
+      {
+        id: 'ammo-1',
+        cheat: {
+          id: 'ammo',
+          name: 'ammo',
+          type: CheatControl.TOGGLE,
+          category: { name: 'WEAPONS' },
+        },
+        displayName: 'Unlimited Ammo',
+        parameters: { min: 0, max: 1, step: 1, defaultValue: false },
+      },
+    ],
+    GAME: [
+      {
+        id: 'team1-reinforcements-1',
+        cheat: {
+          id: 'team1_reinforcements',
+          name: 'team1_reinforcements',
+          type: CheatControl.SLIDER,
+          category: { name: 'GAME' },
+        },
+        displayName: 'Team 1 Reinforcements',
+        parameters: { min: 1, max: 5000, step: 100, defaultValue: 100 },
+      },
+    ],
+  };
 
-  // Gets the cheats by category from the mock data
-  const cheatsByCategory = getCheatsByCategory(currentGame.id);
+  // If no cheats by category, the game is not supported
+  if (Object.keys(cheatsByCategory).length === 0) return null;
+
+  const handleValueChange = (cheatId: string, value: number | boolean | string) => {
+    setCheatStates((prev) => ({
+      ...prev,
+      [cheatId]: value,
+    }));
+  };
 
   return (
     <div className="bg-base-100 px-6 pt-0 pb-6">
@@ -25,38 +117,33 @@ export default function SupportedGame() {
       </div>
 
       <div className="space-y-1">
-        {/* Mapping each category then each cheat in the category */}
         {Object.entries(cheatsByCategory).map(([categoryName, categoryCheats]) => {
           if (!categoryCheats || categoryCheats.length === 0) return null;
 
-          const categoryIcon = categoryCheats[0]?.category?.icon;
+          const categoryIcon = categoryCheats[0]?.cheat?.category?.icon;
 
           return (
             <div key={categoryName} className="collapse-arrow bg-base-200 collapse">
               <input type="checkbox" defaultChecked />
               <div className="collapse-title py-4 text-base font-medium">
-                {/* Category name and icon */}
                 <div className="flex items-center">
                   {categoryIcon && <span className="mr-2 text-lg">{categoryIcon}</span>}
                   <div className="font-semibold">{categoryName}</div>
                 </div>
               </div>
 
-              {/* Mapping each cheat in the category */}
               <div className="collapse-content">
                 <div className="space-y-1 pt-2">
                   {categoryCheats.map((gameCheat) => {
                     if (!gameCheat.cheat) return null;
 
                     const { cheat, parameters, displayName } = gameCheat;
+
+                    // Getting the current value from the local state
                     const currentValue =
                       cheatStates[gameCheat.id] ?? parameters?.defaultValue ?? false;
                     const cheatName = displayName || cheat.name;
                     const isActive = cheat.type === CheatControl.TOGGLE && Boolean(currentValue);
-
-                    const handleValueChange = (value: number | boolean | string) => {
-                      setCheatState(gameCheat.id, value);
-                    };
 
                     return (
                       <div
@@ -81,33 +168,36 @@ export default function SupportedGame() {
                         <div className="flex flex-shrink-0 items-center space-x-3">
                           {/* Control logic based on cheat type */}
                           {cheat.type === CheatControl.STEPPER ? (
-                            // Direct value editing with number stepper
-                            <NumberStepperControl
+                            <StepperControl
                               currentValue={Number(currentValue)}
                               min={parameters?.min}
                               max={parameters?.max}
                               step={parameters?.step}
-                              onValueChange={(value: number) => handleValueChange(value)}
+                              onValueChange={(value: number) =>
+                                handleValueChange(gameCheat.id, value)
+                              }
                             />
                           ) : cheat.type === CheatControl.SLIDER ? (
-                            // Slider with range control
-                            <RangeControl
+                            <SliderControl
                               currentValue={Number(currentValue)}
                               min={parameters?.min}
                               max={parameters?.max}
                               step={parameters?.step}
-                              onValueChange={(value: number) => handleValueChange(value)}
+                              onValueChange={(value: number) =>
+                                handleValueChange(gameCheat.id, value)
+                              }
                             />
                           ) : (
-                            // Default to toggle control
                             <ToggleControl
                               currentValue={Boolean(currentValue)}
-                              onValueChange={(value: boolean) => handleValueChange(value)}
+                              onValueChange={(value: boolean) =>
+                                handleValueChange(gameCheat.id, value)
+                              }
                             />
                           )}
 
                           {/* Keybind control */}
-                          <KeybindControl cheatType={cheat.type} order={gameCheat.order} />
+                          <KeybindControl cheatType={cheat.type} order={gameCheat.order ?? 0} />
                         </div>
                       </div>
                     );
