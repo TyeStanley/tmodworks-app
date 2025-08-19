@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
+import StoreProvider from '@/providers/StoreProvider';
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -22,10 +23,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} antialiased`}>
-        <div className="bg-base-100 flex h-screen flex-col">
-          <Navbar />
-          <main className="flex-1 overflow-hidden">{children}</main>
-        </div>
+        <StoreProvider>
+          <div className="bg-base-100 flex h-screen flex-col">
+            <Navbar />
+            <main className="flex-1 overflow-hidden">{children}</main>
+          </div>
+        </StoreProvider>
       </body>
     </html>
   );
