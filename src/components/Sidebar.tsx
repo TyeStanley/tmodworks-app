@@ -1,66 +1,21 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
-import { invoke } from '@tauri-apps/api/core';
-
-interface SteamGame {
-  app_id: string;
-  name: string;
-}
-
-interface GameWithImage extends SteamGame {
-  imageUrl: string;
-  hasImageError: boolean;
-}
+import { useGameSelection } from '@/hooks/useGameSelection';
+import { useSteamGames } from '@/hooks/useSteamGames';
 
 export default function Sidebar() {
-  // Local state to highlight the selected game
-  const [selectedGame, setSelectedGame] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Local state to store the list of Steam games from local machine
-  const [steamGames, setSteamGames] = useState<GameWithImage[]>([]);
-
-  useEffect(() => {
-    loadSteamGames();
-  }, []);
-
-  // Function to load Steam games from the backend
-  const loadSteamGames = async () => {
-    try {
-      setLoading(true);
-      const games: SteamGame[] = await invoke('scan_steam_games');
-
-      // Add Steam CDN image URLs to each game
-      const gamesWithImages: GameWithImage[] = games.map((game) => ({
-        ...game,
-        imageUrl: `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.app_id}/header.jpg`,
-        hasImageError: false,
-      }));
-
-      setSteamGames(gamesWithImages);
-      setError(null);
-    } catch (err) {
-      console.error('Failed to load Steam games:', err);
-      setError('Failed to load Steam games');
-      // Fallback to empty array if Steam detection fails
-      setSteamGames([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Redux hooks
+  const { selectGame, selectedSteamAppId, isLoading: isGameLoading } = useGameSelection();
+  const { games, loading, error, count, handleImageError } = useSteamGames();
 
   const handleGameClick = (appId: string) => {
-    setSelectedGame(appId);
-
-    // Temporary: just log the selection
-    const gameName = steamGames.find((g) => g.app_id === appId)?.name || 'Unknown Game';
-    console.log(`Selected game: ${gameName} (ID: ${appId})`);
-
-    // TODO: Replace with proper game selection logic
-    // For now, just update the selected state
+    // Use Redux to select the game
+    const steamAppId = parseInt(appId, 10);
+    if (!isNaN(steamAppId)) {
+      selectGame(steamAppId);
+    }
   };
 
   return (
@@ -69,9 +24,9 @@ export default function Sidebar() {
       <div className="border-base-300 border-t p-4">
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-base-content/70 text-xs font-bold tracking-wide uppercase">
-            My Games ({steamGames.length})
+            My Games ({count})
           </h3>
-          {loading && <div className="loading loading-spinner loading-xs" />}
+          {(loading || isGameLoading) && <div className="loading loading-spinner loading-xs" />}
         </div>
 
         {error && (
@@ -80,20 +35,22 @@ export default function Sidebar() {
           </div>
         )}
 
-        {steamGames.length === 0 && !loading && !error && (
+        {games.length === 0 && !loading && !error && (
           <div className="py-4 text-center">
             <span className="text-base-content/50 text-xs">No Steam games found</span>
           </div>
         )}
 
         <div className="space-y-1">
-          {steamGames.map((game) => {
+          {games.map((game) => {
+            const isSelected = selectedSteamAppId === parseInt(game.app_id, 10);
+
             return (
               <button
                 key={game.app_id}
                 onClick={() => handleGameClick(game.app_id)}
                 className={`relative w-full cursor-pointer overflow-hidden rounded-lg transition-all duration-200 ${
-                  selectedGame === game.app_id
+                  isSelected
                     ? 'ring-primary ring-opacity-50 ring-2'
                     : 'hover:scale-[1.02] hover:shadow-lg'
                 }`}
@@ -106,14 +63,7 @@ export default function Sidebar() {
                       alt={game.name}
                       fill
                       className="object-cover"
-                      onError={() => {
-                        // Mark this game as having an image error
-                        setSteamGames((prev) =>
-                          prev.map((g) =>
-                            g.app_id === game.app_id ? { ...g, hasImageError: true } : g,
-                          ),
-                        );
-                      }}
+                      onError={() => handleImageError(game.app_id)}
                       unoptimized={true}
                     />
                   ) : (
