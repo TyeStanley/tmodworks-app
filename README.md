@@ -4,7 +4,7 @@ A desktop application for modifying game stats and parameters, built with Tauri,
 
 ## Features
 
-- **Custom Title Bar**: Like Discord and WeMod, the app uses a custom title bar with window controls
+- **Custom Title Bar**: The app uses a custom title bar with window controls
 - **Game Library**: Browse and manage your game collection
 - **Favorites System**: Mark your favorite games for quick access
 - **Modern UI**: Built with DaisyUI components for a clean, modern interface
