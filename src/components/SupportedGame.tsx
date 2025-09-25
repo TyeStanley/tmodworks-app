@@ -43,7 +43,6 @@ interface CheatsByCategory {
 }
 
 export default function SupportedGame() {
-  // Local state to replace Zustand store
   const [cheatStates, setCheatStates] = useState<Record<string, number | boolean | string>>({});
 
   // Mock data - you'll replace this with your actual data

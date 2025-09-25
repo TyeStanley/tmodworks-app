@@ -9,14 +9,9 @@
     "lint": "next lint",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:studio": "prisma studio",
-    "db:seed": "tsx src/lib/seed.ts"
+    "tauri:build": "tauri build"
   },
   "dependencies": {
-    "@prisma/client": "^6.13.0",
     "@reduxjs/toolkit": "^2.8.2",
     "@tauri-apps/api": "^2.7.0",
     "lucide-react": "^0.539.0",
@@ -37,7 +32,6 @@
     "eslint-config-next": "15.4.6",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "prisma": "^6.13.0",
     "tailwindcss": "^4",
     "tsx": "^4.20.4",
     "typescript": "^5"

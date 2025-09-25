@@ -29,6 +29,7 @@ export const fetchSteamGames = createAsyncThunk(
   'steamGames/fetchSteamGames',
   async (_, { rejectWithValue }) => {
     try {
+      // Get Steam games through the Rust backend
       const games: SteamGame[] = await invoke('scan_steam_games');
 
       // Add Steam CDN image URLs to each game using steamUtils

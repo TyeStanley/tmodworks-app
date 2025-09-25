@@ -31,17 +31,9 @@ export interface GameCheat {
   gameId: string;
   cheatId: string;
   displayName?: string;
-  offsets: {
-    moduleName: string;
-    baseAddress: string;
-    offsets: number[];
-    valueType: string;
-  };
-  parameters: {
-    min: number;
-    max: number;
-    step: number;
-  };
+  moduleName: string;
+  baseAddress: string;
+  offsets: number[];
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

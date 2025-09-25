@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "TModWorks",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.tmodworks",
   "build": {
     "frontendDist": "../out",
     "devUrl": "http://localhost:3000",
@@ -30,7 +30,6 @@
       "csp": null
     }
   },
-
   "bundle": {
     "active": true,
     "targets": "all",
@@ -41,5 +40,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
-  }
+  },
+  "plugins": {}
 }
