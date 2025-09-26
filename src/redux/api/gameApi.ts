@@ -1,66 +1,27 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
-export interface Game {
-  id: string;
-  steamAppId: number;
-  name: string;
-  processName: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CheatCategory {
-  id: string;
-  name: string;
-  priority: number;
-}
-
-export interface Cheat {
-  id: string;
-  name: string;
-  categoryId: string;
-  category: CheatCategory;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface GameCheat {
-  id: string;
-  gameId: string;
-  cheatId: string;
-  displayName?: string;
-  moduleName: string;
-  baseAddress: string;
-  offsets: number[];
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  cheat: Cheat;
-}
-
-export interface GameWithCheats {
-  game: Game;
-  cheatsByCategory: Record<string, GameCheat[]>;
-}
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { baseApiConfig } from './baseApi';
+import { Game } from '@/types';
 
 export const gameApi = createApi({
   reducerPath: 'gameApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
-  tagTypes: ['Game'],
+  ...baseApiConfig,
   endpoints: (builder) => ({
-    getGameWithCheats: builder.query<GameWithCheats, number>({
-      query: (steamAppId) => `/games/${steamAppId}`,
-      providesTags: (result, error, steamAppId) =>
-        result ? [{ type: 'Game', id: steamAppId }] : [],
+    // Get all games
+    getAllGames: builder.query<Game[], { search?: string } | void>({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params?.search) {
+          searchParams.append('search', params.search);
+        }
+        const queryString = searchParams.toString();
+        return `/game${queryString ? `?${queryString}` : ''}`;
+      },
     }),
-
-    getAllGames: builder.query<Game[], void>({
-      query: () => '/games',
-      providesTags: ['Game'],
+    // Get game by app id
+    getGameByAppId: builder.query<Game, number>({
+      query: (appId) => `/game/${appId}`,
     }),
   }),
 });
 
-export const { useGetGameWithCheatsQuery, useGetAllGamesQuery } = gameApi;
+export const { useGetAllGamesQuery, useGetGameByAppIdQuery } = gameApi;

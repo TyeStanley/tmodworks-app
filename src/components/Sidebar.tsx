@@ -1,20 +1,33 @@
 'use client';
 
-import React from 'react';
-import Image from 'next/image';
-import { useGameSelection } from '@/hooks/useGameSelection';
-import { useSteamGames } from '@/hooks/useSteamGames';
+import React, { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { fetchCurrentGameByAppId, fetchSteamGames } from '@/redux/state/gameSlice';
+import { getSteamImageUrls } from '@/lib/steamUtils';
 
 export default function Sidebar() {
-  // Redux hooks
-  const { selectGame, selectedSteamAppId, isLoading: isGameLoading } = useGameSelection();
-  const { games, loading, error, count, handleImageError } = useSteamGames();
+  const dispatch = useAppDispatch();
+  const {
+    data: currentGame,
+    isLoading: isGameLoading,
+    unsupportedGame,
+    steamGames: games,
+    steamGamesLoading: loading,
+    steamGamesError: error,
+  } = useAppSelector((state) => state.game);
+  const count = games.length;
+
+  // Fetch Steam games on component mount
+  useEffect(() => {
+    if (games.length === 0 && !loading && !error) {
+      dispatch(fetchSteamGames());
+    }
+  }, [dispatch, games.length, loading, error]);
 
   const handleGameClick = (appId: string) => {
-    // Use Redux to select the game
     const steamAppId = parseInt(appId, 10);
     if (!isNaN(steamAppId)) {
-      selectGame(steamAppId);
+      dispatch(fetchCurrentGameByAppId(steamAppId));
     }
   };
 
@@ -43,12 +56,14 @@ export default function Sidebar() {
 
         <div className="space-y-1">
           {games.map((game) => {
-            const isSelected = selectedSteamAppId === parseInt(game.app_id, 10);
+            const isSelected =
+              currentGame?.steamAppId === parseInt(game.appId, 10) ||
+              unsupportedGame?.appId === game.appId;
 
             return (
               <button
-                key={game.app_id}
-                onClick={() => handleGameClick(game.app_id)}
+                key={game.appId}
+                onClick={() => handleGameClick(game.appId)}
                 className={`relative w-full cursor-pointer overflow-hidden rounded-lg transition-all duration-200 ${
                   isSelected
                     ? 'ring-primary ring-opacity-50 ring-2'
@@ -56,20 +71,13 @@ export default function Sidebar() {
                 }`}
               >
                 <div className="relative h-16 w-full">
-                  {/* Background Image or Fallback */}
-                  {!game.hasImageError ? (
-                    <Image
-                      src={game.imageUrl}
-                      alt={game.name}
-                      fill
-                      className="object-cover"
-                      onError={() => handleImageError(game.app_id)}
-                      unoptimized={true}
-                    />
-                  ) : (
-                    /* Fallback Background */
-                    <div className="from-primary via-secondary to-primary/80 flex h-full w-full items-center justify-center bg-gradient-to-br" />
-                  )}
+                  {/* Background Image */}
+                  <div
+                    className="h-full w-full bg-gray-800 bg-cover bg-center bg-no-repeat"
+                    style={{
+                      backgroundImage: `url(${getSteamImageUrls(game.appId).header})`,
+                    }}
+                  />
 
                   {/* Dark Overlay */}
                   <div className="absolute inset-0 bg-black/50" />

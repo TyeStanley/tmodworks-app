@@ -1,13 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import { gameApi } from './api/gameApi';
 import gameReducer from './state/gameSlice';
-import steamGamesReducer from './state/steamGamesSlice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       game: gameReducer,
-      steamGames: steamGamesReducer,
       [gameApi.reducerPath]: gameApi.reducer,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(gameApi.middleware),
