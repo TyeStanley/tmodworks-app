@@ -1,10 +1,15 @@
 import Image from 'next/image';
 import { getSteamImageUrls } from '@/lib/steamUtils';
-import { useAppSelector } from '@/redux/hooks';
+import { useAppSelector, useAppDispatch } from '@/redux/hooks';
+import { togglePlay } from '@/redux/state/gameSlice';
+import Button from '@/components/ui/Button';
 
 export default function GameHeader() {
+  const dispatch = useAppDispatch();
   const currentGame = useAppSelector((state) => state.game.data);
   const unsupportedGame = useAppSelector((state) => state.game.unsupportedGame);
+  const isActive = useAppSelector((state) => state.game.isActive);
+  const isActivating = useAppSelector((state) => state.game.isActivating);
 
   // If no game is selected, don't render anything
   if (!currentGame && !unsupportedGame) {
@@ -18,6 +23,10 @@ export default function GameHeader() {
     : unsupportedGame
       ? getSteamImageUrls(unsupportedGame.appId)
       : { hero: '', library: '', header: '', capsule: '' };
+
+  const handlePlayToggle = () => {
+    dispatch(togglePlay());
+  };
 
   return (
     <div className="relative h-64 w-full">
@@ -48,6 +57,30 @@ export default function GameHeader() {
           {/* Game Title */}
           <h1 className="text-4xl font-bold drop-shadow-lg">{gameData?.name}</h1>
         </div>
+
+        {/* Play/Stop Button - Bottom Right (only show for supported games) */}
+        {currentGame && (
+          <div className="absolute right-6 bottom-6">
+            <Button
+              variant={isActive ? 'secondary' : 'primary'}
+              size="lg"
+              onClick={handlePlayToggle}
+              disabled={isActivating}
+              className="relative flex h-12 w-24 items-center justify-center overflow-hidden rounded-lg shadow-lg"
+            >
+              {isActivating ? (
+                <div className="flex flex-col items-center justify-center">
+                  <div className="mb-1 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  <span className="text-sm font-semibold text-white drop-shadow-md">
+                    {isActive ? 'Starting...' : 'Stopping...'}
+                  </span>
+                </div>
+              ) : (
+                <span className="font-medium">{isActive ? 'Stop' : 'Play'}</span>
+              )}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

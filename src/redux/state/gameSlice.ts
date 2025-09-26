@@ -24,6 +24,10 @@ interface GameState {
 
   // Cheat states
   cheatStates: Record<string, number | boolean | string>;
+
+  // Play state
+  isActive: boolean;
+  isActivating: boolean;
 }
 
 const initialState: GameState = {
@@ -40,6 +44,10 @@ const initialState: GameState = {
 
   // Cheat states
   cheatStates: {},
+
+  // Play state
+  isActive: false,
+  isActivating: false,
 };
 
 export const gameSlice = createSlice({
@@ -99,6 +107,17 @@ export const gameSlice = createSlice({
     },
     clearCheatState: (state, action: PayloadAction<string>) => {
       delete state.cheatStates[action.payload];
+    },
+
+    // Active state actions
+    setActive: (state, action: PayloadAction<boolean>) => {
+      state.isActive = action.payload;
+    },
+    toggleActive: (state) => {
+      state.isActive = !state.isActive;
+    },
+    setActivating: (state, action: PayloadAction<boolean>) => {
+      state.isActivating = action.payload;
     },
   },
 });
@@ -185,6 +204,45 @@ export const fetchSteamGames = createAsyncThunk(
   },
 );
 
+// Toggle play state thunk
+export const togglePlay = createAsyncThunk(
+  'game/togglePlay',
+  async (_, { dispatch, getState, rejectWithValue }) => {
+    try {
+      const state = getState() as { game: GameState };
+      const { isActive } = state.game;
+
+      // Set loading state
+      dispatch(setActivating(true));
+
+      if (isActive) {
+        // Stop logic - you can add your stop logic here
+        console.log('Stopping cheat script...');
+        // Add your stop logic here
+        dispatch(setActive(false));
+      } else {
+        // Play logic - you can add your play logic here
+        console.log('Starting cheat script...');
+        // Add your play logic here
+        dispatch(setActive(true));
+      }
+
+      // Simulate delay for cheat script activation/deactivation
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Clear loading state
+      dispatch(setActivating(false));
+      return !isActive;
+    } catch (error) {
+      // Clear loading state on error
+      dispatch(setActivating(false));
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Failed to toggle play state',
+      );
+    }
+  },
+);
+
 export const {
   setGame,
   clearGame,
@@ -198,6 +256,9 @@ export const {
   setCheatValue,
   clearCheatStates,
   clearCheatState,
+  setActive,
+  toggleActive,
+  setActivating,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;
