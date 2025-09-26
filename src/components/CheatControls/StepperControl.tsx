@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface StepperControlProps {
   currentValue: number;
@@ -18,14 +19,16 @@ export default function StepperControl({
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(currentValue.toString());
 
+  const debouncedOnValueChange = useDebounce(onValueChange, 100);
+
   const handleIncrement = () => {
     const newValue = Math.min(currentValue + step, max);
-    onValueChange(newValue);
+    debouncedOnValueChange(newValue);
   };
 
   const handleDecrement = () => {
     const newValue = Math.max(currentValue - step, min);
-    onValueChange(newValue);
+    debouncedOnValueChange(newValue);
   };
 
   const handleDirectEdit = () => {
@@ -37,7 +40,8 @@ export default function StepperControl({
     const numValue = parseFloat(editValue);
     if (!isNaN(numValue)) {
       const clampedValue = Math.max(min, Math.min(max, numValue));
-      onValueChange(clampedValue);
+      const roundedValue = Math.round(clampedValue);
+      debouncedOnValueChange(roundedValue);
     }
     setIsEditing(false);
   };
@@ -52,10 +56,10 @@ export default function StepperControl({
   };
 
   return (
-    <div className="flex items-center space-x-1">
+    <div className="flex h-8 items-center space-x-1">
       {/* Decrement Button */}
       <button
-        className="btn btn-xs btn-square btn-outline"
+        className="btn btn-xs h-8 w-8 rounded-md"
         onClick={handleDecrement}
         disabled={currentValue <= min}
       >
@@ -66,7 +70,7 @@ export default function StepperControl({
       {isEditing ? (
         <input
           type="number"
-          className="input input-xs w-16 text-center"
+          className="input input-xs h-8 w-16 [appearance:textfield] rounded-md text-center focus:ring-0 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onBlur={handleEditSubmit}
@@ -78,7 +82,7 @@ export default function StepperControl({
         />
       ) : (
         <div
-          className="bg-base-200 text-base-content/70 hover:bg-base-300 flex h-8 w-16 cursor-pointer items-center justify-center rounded font-mono text-xs font-semibold"
+          className="bg-base-200 text-base-content/70 hover:bg-base-300 flex h-8 w-16 cursor-pointer items-center justify-center rounded-md font-mono text-xs font-semibold"
           onClick={handleDirectEdit}
         >
           {currentValue}
@@ -87,7 +91,7 @@ export default function StepperControl({
 
       {/* Increment Button */}
       <button
-        className="btn btn-xs btn-square btn-outline"
+        className="btn btn-xs h-8 w-8 rounded-md"
         onClick={handleIncrement}
         disabled={currentValue >= max}
       >

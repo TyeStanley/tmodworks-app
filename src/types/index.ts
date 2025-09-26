@@ -50,6 +50,10 @@ export interface GameCheat {
   baseAddress: string;
   offsets: number[];
   isActive: boolean;
+  controlType: 'TOGGLE' | 'STEPPER' | 'SLIDER';
+  min?: number;
+  max?: number;
+  step?: number;
   createdAt: string;
   updatedAt: string;
   game?: Game;

@@ -21,6 +21,9 @@ interface GameState {
   steamGames: SteamGame[];
   steamGamesLoading: boolean;
   steamGamesError: string | null;
+
+  // Cheat states
+  cheatStates: Record<string, number | boolean | string>;
 }
 
 const initialState: GameState = {
@@ -34,6 +37,9 @@ const initialState: GameState = {
   steamGames: [],
   steamGamesLoading: false,
   steamGamesError: null,
+
+  // Cheat states
+  cheatStates: {},
 };
 
 export const gameSlice = createSlice({
@@ -79,6 +85,20 @@ export const gameSlice = createSlice({
     },
     clearSteamGamesError: (state) => {
       state.steamGamesError = null;
+    },
+
+    // Cheat state actions
+    setCheatValue: (
+      state,
+      action: PayloadAction<{ cheatId: string; value: number | boolean | string }>,
+    ) => {
+      state.cheatStates[action.payload.cheatId] = action.payload.value;
+    },
+    clearCheatStates: (state) => {
+      state.cheatStates = {};
+    },
+    clearCheatState: (state, action: PayloadAction<string>) => {
+      delete state.cheatStates[action.payload];
     },
   },
 });
@@ -175,6 +195,9 @@ export const {
   setSteamGamesError,
   setSteamGames,
   clearSteamGamesError,
+  setCheatValue,
+  clearCheatStates,
+  clearCheatState,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;
